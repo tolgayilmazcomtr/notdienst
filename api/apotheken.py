@@ -1,4 +1,3 @@
-
 from http.server import BaseHTTPRequestHandler
 import urllib.request
 import urllib.parse
@@ -37,14 +36,12 @@ def fetch_apotheken(bezirk_code):
         with urllib.request.urlopen(req, timeout=10) as response:
             html = response.read().decode('utf-8')
         
-        # HTML'i parse et
         parser = SimpleHTMLParser()
         parser.feed(html)
         text = parser.get_text()
         
         lines = [line.strip() for line in text.split('\n') if line.strip()]
         
-        # Filtrele
         skip_keywords = [
             'Apothekerkammer Berlin',
             'Notdienstdisplay',
@@ -67,7 +64,6 @@ def fetch_apotheken(bezirk_code):
                 continue
             filtered_lines.append(line)
         
-        # Eczaneleri parse et
         apotheken = []
         i = 0
         
@@ -119,7 +115,6 @@ class handler(BaseHTTPRequestHandler):
     """Vercel Handler"""
     
     def do_GET(self):
-        # CORS headers
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
         self.send_header('Access-Control-Allow-Origin', '*')
@@ -127,15 +122,12 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.end_headers()
         
-        # Query parametrelerini al
         query = urllib.parse.urlparse(self.path).query
         params = urllib.parse.parse_qs(query)
         bezirk_code = params.get('code', ['0950'])[0]
         
-        # Veriyi çek
         apotheken = fetch_apotheken(bezirk_code)
         
-        # JSON olarak döndür
         response = {
             'success': True,
             'code': bezirk_code,
