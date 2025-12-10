@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eczane Yönetim Paneli</title>
+    <title>DokTV - Apotheken Verwaltung</title>
     <style>
         * {
             margin: 0;
@@ -11,318 +11,434 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #2C5F6F;
+            --secondary: #4A9DB0;
+            --accent: #5BC0BE;
+            --dark: #1a3a44;
+            --light: #E8F4F5;
+            --white: #ffffff;
+            --gray: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding: 0;
+            margin: 0;
         }
 
+        /* Login Container */
         .login-container {
-            max-width: 400px;
-            margin: 100px auto;
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 450px;
+            margin: 80px auto;
+            background: var(--white);
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
 
-        .login-container h1 {
+        .login-logo {
             text-align: center;
-            color: #333;
+            margin-bottom: 40px;
+        }
+
+        .login-logo img {
+            max-width: 200px;
+            height: auto;
+        }
+
+        .login-title {
+            text-align: center;
+            color: var(--dark);
+            font-size: 24px;
+            font-weight: 600;
             margin-bottom: 30px;
         }
 
+        /* Admin Container */
         .admin-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            padding: 20px;
             display: none;
         }
 
-        .header {
+        /* Header */
+        .admin-header {
+            background: var(--white);
+            padding: 20px 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #eee;
         }
 
-        .header h1 {
-            color: #333;
+        .header-logo img {
+            max-width: 150px;
+            height: auto;
         }
 
-        .logout-btn {
-            background: #ff4444;
-            color: white;
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .admin-title {
+            color: var(--dark);
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 28px;
             border: none;
-            padding: 10px 20px;
             border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(74, 157, 176, 0.4);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: var(--white);
+            padding: 10px 20px;
             font-size: 14px;
         }
 
-        .logout-btn:hover {
-            background: #cc0000;
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-1px);
         }
 
+        /* Form Groups */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #555;
+            color: var(--dark);
             font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .form-group input {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            padding: 14px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: var(--light);
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--accent);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(91, 192, 190, 0.1);
         }
 
-        .btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .error {
-            color: #ff4444;
-            text-align: center;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .add-form {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 10px;
+        /* Add Form Card */
+        .add-form-card {
+            background: var(--white);
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
             margin-bottom: 30px;
         }
 
-        .add-form h2 {
-            margin-bottom: 20px;
-            color: #333;
+        .card-title {
+            color: var(--dark);
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--accent);
         }
 
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .eczane-list {
-            margin-top: 30px;
-        }
-
-        .eczane-list h2 {
+            gap: 25px;
             margin-bottom: 20px;
-            color: #333;
         }
 
-        .eczane-card {
-            background: white;
-            border: 2px solid #eee;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-            transition: box-shadow 0.3s;
+        /* Apotheken List */
+        .apotheken-section {
+            background: var(--white);
+            padding: 35px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
 
-        .eczane-card:hover {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        .apotheke-card {
+            background: var(--light);
+            border-left: 5px solid var(--accent);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
         }
 
-        .eczane-header {
+        .apotheke-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transform: translateX(5px);
+        }
+
+        .apotheke-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
-        .eczane-name {
-            font-size: 18px;
+        .apotheke-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .apotheke-code {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            color: var(--white);
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 14px;
             font-weight: 600;
-            color: #333;
-        }
-
-        .eczane-code {
-            background: #667eea;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-        }
-
-        .eczane-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .action-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: transform 0.2s;
-        }
-
-        .action-btn:hover {
-            transform: translateY(-1px);
-        }
-
-        .edit-btn {
-            background: #4CAF50;
-            color: white;
-        }
-
-        .delete-btn {
-            background: #f44336;
-            color: white;
-        }
-
-        .copy-btn {
-            background: #2196F3;
-            color: white;
+            letter-spacing: 1px;
         }
 
         .iframe-code {
-            background: #f5f5f5;
-            padding: 12px;
-            border-radius: 6px;
+            background: var(--white);
+            padding: 15px;
+            border-radius: 8px;
             font-family: 'Courier New', monospace;
             font-size: 12px;
             word-break: break-all;
-            margin-top: 10px;
-            border: 1px solid #ddd;
+            margin: 15px 0;
+            border: 2px solid #e0e0e0;
+            color: var(--dark);
         }
 
-        .success-message {
-            background: #4CAF50;
-            color: white;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 20px;
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-copy {
+            background: var(--secondary);
+            color: var(--white);
+        }
+
+        .btn-copy:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .btn-edit {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .btn-edit:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-delete {
+            background: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        /* Messages */
+        .message {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-weight: 600;
             display: none;
+            animation: slideIn 0.3s ease;
         }
 
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 5px solid var(--success);
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 5px solid var(--danger);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            color: #999;
+            padding: 80px 20px;
+            color: var(--gray);
         }
 
-        .empty-state svg {
-            width: 100px;
-            height: 100px;
+        .empty-state-icon {
+            font-size: 80px;
             margin-bottom: 20px;
             opacity: 0.3;
         }
 
+        .empty-state-text {
+            font-size: 18px;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
             .form-row {
                 grid-template-columns: 1fr;
             }
 
-            .eczane-header {
+            .admin-header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+
+            .apotheke-header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 10px;
+                gap: 15px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Login Ekranı -->
+    <!-- Login Screen -->
     <div class="login-container" id="loginContainer">
-        <h1>🏥 Admin Girişi</h1>
-        <div class="form-group">
-            <label for="password">Şifre</label>
-            <input type="password" id="password" placeholder="Şifrenizi girin">
+        <div class="login-logo">
+            <img src="https://doktv.de/wp-content/uploads/2025/10/doktv-web-logo.png" alt="DokTV Logo">
         </div>
-        <button class="btn" onclick="login()">Giriş Yap</button>
-        <div class="error" id="loginError">Hatalı şifre!</div>
+        <h1 class="login-title">Admin Bereich</h1>
+        <div class="form-group">
+            <label for="password">Passwort</label>
+            <input type="password" id="password" placeholder="Passwort eingeben">
+        </div>
+        <button class="btn btn-primary" style="width: 100%;" onclick="login()">Anmelden</button>
+        <div class="message error" id="loginError">Falsches Passwort!</div>
     </div>
 
-    <!-- Admin Paneli -->
+    <!-- Admin Panel -->
     <div class="admin-container" id="adminContainer">
-        <div class="header">
-            <h1>🏥 Eczane Yönetim Paneli</h1>
-            <button class="logout-btn" onclick="logout()">Çıkış Yap</button>
+        <!-- Header -->
+        <div class="admin-header">
+            <div class="header-logo">
+                <img src="https://doktv.de/wp-content/uploads/2025/10/doktv-web-logo.png" alt="DokTV Logo">
+            </div>
+            <div class="header-actions">
+                <span class="admin-title">Apotheken Verwaltung</span>
+                <button class="btn btn-danger" onclick="logout()">Abmelden</button>
+            </div>
         </div>
 
-        <div class="success-message" id="successMessage"></div>
+        <div class="message success" id="successMessage"></div>
 
-        <!-- Eczane Ekleme Formu -->
-        <div class="add-form">
-            <h2>➕ Yeni Eczane Ekle</h2>
+        <!-- Add Form -->
+        <div class="add-form-card">
+            <h2 class="card-title">Neue Apotheke hinzufügen</h2>
             <div class="form-row">
                 <div class="form-group">
-                    <label for="eczaneName">Eczane Adı</label>
-                    <input type="text" id="eczaneName" placeholder="Örn: Merkez Eczanesi">
+                    <label for="apothekeName">Apotheken Name</label>
+                    <input type="text" id="apothekeName" placeholder="z.B. Stadt-Apotheke Berlin">
                 </div>
                 <div class="form-group">
-                    <label for="eczaneCode">Eczane Kodu</label>
-                    <input type="text" id="eczaneCode" placeholder="Örn: 0950">
+                    <label for="apothekeCode">Apotheken Code</label>
+                    <input type="text" id="apothekeCode" placeholder="z.B. 0950">
                 </div>
             </div>
-            <button class="btn" onclick="addEczane()">Oluştur</button>
+            <button class="btn btn-primary" onclick="addApotheke()">Apotheke erstellen</button>
         </div>
 
-        <!-- Eczane Listesi -->
-        <div class="eczane-list">
-            <h2>📋 Kayıtlı Eczaneler</h2>
-            <div id="eczaneListContainer"></div>
+        <!-- Apotheken List -->
+        <div class="apotheken-section">
+            <h2 class="card-title">Registrierte Apotheken</h2>
+            <div id="apothekenList"></div>
         </div>
     </div>
 
     <script>
         const CORRECT_PASSWORD = 'Dok123654';
-        const BASE_URL = 'https://notdienst.vercel.app'; // Buraya kendi URL'nizi yazın
+        const BASE_URL = 'https://notdienst.vercel.app';
 
-        // LocalStorage'dan veri yönetimi
-        function getEczaneler() {
-            const data = localStorage.getItem('eczaneler');
+        // LocalStorage Management
+        function getApotheken() {
+            const data = localStorage.getItem('doktv_apotheken');
             return data ? JSON.parse(data) : [];
         }
 
-        function saveEczaneler(eczaneler) {
-            localStorage.setItem('eczaneler', JSON.stringify(eczaneler));
+        function saveApotheken(apotheken) {
+            localStorage.setItem('doktv_apotheken', JSON.stringify(apotheken));
         }
 
-        // Login kontrol
+        // Login
         function login() {
             const password = document.getElementById('password').value;
             const errorDiv = document.getElementById('loginError');
@@ -330,8 +446,8 @@
             if (password === CORRECT_PASSWORD) {
                 document.getElementById('loginContainer').style.display = 'none';
                 document.getElementById('adminContainer').style.display = 'block';
-                sessionStorage.setItem('isLoggedIn', 'true');
-                loadEczaneler();
+                sessionStorage.setItem('doktv_logged_in', 'true');
+                loadApotheken();
             } else {
                 errorDiv.style.display = 'block';
                 setTimeout(() => {
@@ -342,175 +458,164 @@
 
         // Logout
         function logout() {
-            sessionStorage.removeItem('isLoggedIn');
+            sessionStorage.removeItem('doktv_logged_in');
             document.getElementById('loginContainer').style.display = 'block';
             document.getElementById('adminContainer').style.display = 'none';
             document.getElementById('password').value = '';
         }
 
-        // Sayfa yüklendiğinde login kontrolü
+        // Check login on load
         window.addEventListener('DOMContentLoaded', () => {
-            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+            if (sessionStorage.getItem('doktv_logged_in') === 'true') {
                 document.getElementById('loginContainer').style.display = 'none';
                 document.getElementById('adminContainer').style.display = 'block';
-                loadEczaneler();
+                loadApotheken();
             }
 
-            // Enter tuşu ile login
             document.getElementById('password').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    login();
-                }
+                if (e.key === 'Enter') login();
             });
         });
 
-        // Eczane ekle
-        function addEczane() {
-            const name = document.getElementById('eczaneName').value.trim();
-            const code = document.getElementById('eczaneCode').value.trim();
+        // Add Apotheke
+        function addApotheke() {
+            const name = document.getElementById('apothekeName').value.trim();
+            const code = document.getElementById('apothekeCode').value.trim();
 
             if (!name || !code) {
-                alert('Lütfen tüm alanları doldurun!');
+                showMessage('Bitte alle Felder ausfüllen!', 'error');
                 return;
             }
 
-            const eczaneler = getEczaneler();
+            const apotheken = getApotheken();
             
-            // Kod kontrolü
-            if (eczaneler.some(e => e.code === code)) {
-                alert('Bu kod zaten kullanılıyor!');
+            if (apotheken.some(a => a.code === code)) {
+                showMessage('Dieser Code wird bereits verwendet!', 'error');
                 return;
             }
 
-            const newEczane = {
+            const newApotheke = {
                 id: Date.now(),
                 name: name,
                 code: code,
                 createdAt: new Date().toISOString()
             };
 
-            eczaneler.push(newEczane);
-            saveEczaneler(eczaneler);
+            apotheken.push(newApotheke);
+            saveApotheken(apotheken);
 
-            // Formu temizle
-            document.getElementById('eczaneName').value = '';
-            document.getElementById('eczaneCode').value = '';
+            document.getElementById('apothekeName').value = '';
+            document.getElementById('apothekeCode').value = '';
 
-            // Listeyi güncelle
-            loadEczaneler();
-            showSuccess('Eczane başarıyla eklendi!');
+            loadApotheken();
+            showMessage('Apotheke erfolgreich hinzugefügt!', 'success');
         }
 
-        // Eczaneleri listele
-        function loadEczaneler() {
-            const eczaneler = getEczaneler();
-            const container = document.getElementById('eczaneListContainer');
+        // Load Apotheken
+        function loadApotheken() {
+            const apotheken = getApotheken();
+            const container = document.getElementById('apothekenList');
 
-            if (eczaneler.length === 0) {
+            if (apotheken.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                        </svg>
-                        <p>Henüz eczane eklenmemiş</p>
+                        <div class="empty-state-icon">📋</div>
+                        <p class="empty-state-text">Noch keine Apotheken registriert</p>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = eczaneler.map(eczane => `
-                <div class="eczane-card">
-                    <div class="eczane-header">
-                        <div class="eczane-name">${eczane.name}</div>
-                        <div class="eczane-code">Kod: ${eczane.code}</div>
+            container.innerHTML = apotheken.map(apotheke => `
+                <div class="apotheke-card">
+                    <div class="apotheke-header">
+                        <div class="apotheke-name">${apotheke.name}</div>
+                        <div class="apotheke-code">Code: ${apotheke.code}</div>
                     </div>
                     
-                    <div class="iframe-code" id="iframe-${eczane.id}">
-&lt;iframe src="${BASE_URL}/?code=${eczane.code}" width="100%" height="80" frameborder="0" style="border: none;"&gt;&lt;/iframe&gt;
-                    </div>
+                    <div class="iframe-code" id="iframe-${apotheke.id}">&lt;iframe src="${BASE_URL}/?code=${apotheke.code}" width="100%" height="80" frameborder="0" style="border: none;"&gt;&lt;/iframe&gt;</div>
 
-                    <div class="eczane-actions">
-                        <button class="action-btn copy-btn" onclick="copyIframe(${eczane.id})">
-                            📋 Kodu Kopyala
+                    <div class="action-buttons">
+                        <button class="action-btn btn-copy" onclick="copyIframe(${apotheke.id})">
+                            Code kopieren
                         </button>
-                        <button class="action-btn edit-btn" onclick="editEczane(${eczane.id})">
-                            ✏️ Düzenle
+                        <button class="action-btn btn-edit" onclick="editApotheke(${apotheke.id})">
+                            Bearbeiten
                         </button>
-                        <button class="action-btn delete-btn" onclick="deleteEczane(${eczane.id})">
-                            🗑️ Sil
+                        <button class="action-btn btn-delete" onclick="deleteApotheke(${apotheke.id})">
+                            Löschen
                         </button>
                     </div>
                 </div>
             `).join('');
         }
 
-        // Iframe kodunu kopyala
+        // Copy Iframe
         function copyIframe(id) {
             const iframeDiv = document.getElementById(`iframe-${id}`);
             const text = iframeDiv.textContent.trim();
             
             navigator.clipboard.writeText(text).then(() => {
-                showSuccess('Iframe kodu kopyalandı!');
-            }).catch(err => {
-                // Fallback method
+                showMessage('Iframe Code kopiert!', 'success');
+            }).catch(() => {
                 const textarea = document.createElement('textarea');
                 textarea.value = text;
                 document.body.appendChild(textarea);
                 textarea.select();
                 document.execCommand('copy');
                 document.body.removeChild(textarea);
-                showSuccess('Iframe kodu kopyalandı!');
+                showMessage('Iframe Code kopiert!', 'success');
             });
         }
 
-        // Eczane düzenle
-        function editEczane(id) {
-            const eczaneler = getEczaneler();
-            const eczane = eczaneler.find(e => e.id === id);
+        // Edit Apotheke
+        function editApotheke(id) {
+            const apotheken = getApotheken();
+            const apotheke = apotheken.find(a => a.id === id);
 
-            if (!eczane) return;
+            if (!apotheke) return;
 
-            const newName = prompt('Yeni eczane adı:', eczane.name);
+            const newName = prompt('Neuer Apotheken Name:', apotheke.name);
             if (!newName) return;
 
-            const newCode = prompt('Yeni eczane kodu:', eczane.code);
+            const newCode = prompt('Neuer Apotheken Code:', apotheke.code);
             if (!newCode) return;
 
-            // Kod kontrolü (aynı kod başkasında varsa)
-            if (eczaneler.some(e => e.code === newCode && e.id !== id)) {
-                alert('Bu kod başka bir eczane tarafından kullanılıyor!');
+            if (apotheken.some(a => a.code === newCode && a.id !== id)) {
+                showMessage('Dieser Code wird bereits verwendet!', 'error');
                 return;
             }
 
-            eczane.name = newName.trim();
-            eczane.code = newCode.trim();
+            apotheke.name = newName.trim();
+            apotheke.code = newCode.trim();
 
-            saveEczaneler(eczaneler);
-            loadEczaneler();
-            showSuccess('Eczane güncellendi!');
+            saveApotheken(apotheken);
+            loadApotheken();
+            showMessage('Apotheke aktualisiert!', 'success');
         }
 
-        // Eczane sil
-        function deleteEczane(id) {
-            if (!confirm('Bu eczaneyi silmek istediğinizden emin misiniz?')) {
+        // Delete Apotheke
+        function deleteApotheke(id) {
+            if (!confirm('Möchten Sie diese Apotheke wirklich löschen?')) {
                 return;
             }
 
-            let eczaneler = getEczaneler();
-            eczaneler = eczaneler.filter(e => e.id !== id);
-            saveEczaneler(eczaneler);
-            loadEczaneler();
-            showSuccess('Eczane silindi!');
+            let apotheken = getApotheken();
+            apotheken = apotheken.filter(a => a.id !== id);
+            saveApotheken(apotheken);
+            loadApotheken();
+            showMessage('Apotheke gelöscht!', 'success');
         }
 
-        // Başarı mesajı göster
-        function showSuccess(message) {
-            const successDiv = document.getElementById('successMessage');
-            successDiv.textContent = message;
-            successDiv.style.display = 'block';
+        // Show Message
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('successMessage');
+            messageDiv.textContent = message;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
 
             setTimeout(() => {
-                successDiv.style.display = 'none';
+                messageDiv.style.display = 'none';
             }, 3000);
         }
     </script>
