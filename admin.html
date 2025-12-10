@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eczane Yönetim Paneli</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .login-container h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            display: none;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .header h1 {
+            color: #333;
+        }
+
+        .logout-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: #cc0000;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .error {
+            color: #ff4444;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .add-form {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .add-form h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .eczane-list {
+            margin-top: 30px;
+        }
+
+        .eczane-list h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .eczane-card {
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: box-shadow 0.3s;
+        }
+
+        .eczane-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .eczane-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .eczane-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .eczane-code {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .eczane-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform 0.2s;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .edit-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .copy-btn {
+            background: #2196F3;
+            color: white;
+        }
+
+        .iframe-code {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .success-message {
+            background: #4CAF50;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .eczane-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Ekranı -->
+    <div class="login-container" id="loginContainer">
+        <h1>🏥 Admin Girişi</h1>
+        <div class="form-group">
+            <label for="password">Şifre</label>
+            <input type="password" id="password" placeholder="Şifrenizi girin">
+        </div>
+        <button class="btn" onclick="login()">Giriş Yap</button>
+        <div class="error" id="loginError">Hatalı şifre!</div>
+    </div>
+
+    <!-- Admin Paneli -->
+    <div class="admin-container" id="adminContainer">
+        <div class="header">
+            <h1>🏥 Eczane Yönetim Paneli</h1>
+            <button class="logout-btn" onclick="logout()">Çıkış Yap</button>
+        </div>
+
+        <div class="success-message" id="successMessage"></div>
+
+        <!-- Eczane Ekleme Formu -->
+        <div class="add-form">
+            <h2>➕ Yeni Eczane Ekle</h2>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="eczaneName">Eczane Adı</label>
+                    <input type="text" id="eczaneName" placeholder="Örn: Merkez Eczanesi">
+                </div>
+                <div class="form-group">
+                    <label for="eczaneCode">Eczane Kodu</label>
+                    <input type="text" id="eczaneCode" placeholder="Örn: 0950">
+                </div>
+            </div>
+            <button class="btn" onclick="addEczane()">Oluştur</button>
+        </div>
+
+        <!-- Eczane Listesi -->
+        <div class="eczane-list">
+            <h2>📋 Kayıtlı Eczaneler</h2>
+            <div id="eczaneListContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        const CORRECT_PASSWORD = 'Dok123654';
+        const BASE_URL = 'https://notdienst.vercel.app'; // Buraya kendi URL'nizi yazın
+
+        // LocalStorage'dan veri yönetimi
+        function getEczaneler() {
+            const data = localStorage.getItem('eczaneler');
+            return data ? JSON.parse(data) : [];
+        }
+
+        function saveEczaneler(eczaneler) {
+            localStorage.setItem('eczaneler', JSON.stringify(eczaneler));
+        }
+
+        // Login kontrol
+        function login() {
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('loginError');
+
+            if (password === CORRECT_PASSWORD) {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('adminContainer').style.display = 'block';
+                sessionStorage.setItem('isLoggedIn', 'true');
+                loadEczaneler();
+            } else {
+                errorDiv.style.display = 'block';
+                setTimeout(() => {
+                    errorDiv.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // Logout
+        function logout() {
+            sessionStorage.removeItem('isLoggedIn');
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('adminContainer').style.display = 'none';
+            document.getElementById('password').value = '';
+        }
+
+        // Sayfa yüklendiğinde login kontrolü
+        window.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('adminContainer').style.display = 'block';
+                loadEczaneler();
+            }
+
+            // Enter tuşu ile login
+            document.getElementById('password').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    login();
+                }
+            });
+        });
+
+        // Eczane ekle
+        function addEczane() {
+            const name = document.getElementById('eczaneName').value.trim();
+            const code = document.getElementById('eczaneCode').value.trim();
+
+            if (!name || !code) {
+                alert('Lütfen tüm alanları doldurun!');
+                return;
+            }
+
+            const eczaneler = getEczaneler();
+            
+            // Kod kontrolü
+            if (eczaneler.some(e => e.code === code)) {
+                alert('Bu kod zaten kullanılıyor!');
+                return;
+            }
+
+            const newEczane = {
+                id: Date.now(),
+                name: name,
+                code: code,
+                createdAt: new Date().toISOString()
+            };
+
+            eczaneler.push(newEczane);
+            saveEczaneler(eczaneler);
+
+            // Formu temizle
+            document.getElementById('eczaneName').value = '';
+            document.getElementById('eczaneCode').value = '';
+
+            // Listeyi güncelle
+            loadEczaneler();
+            showSuccess('Eczane başarıyla eklendi!');
+        }
+
+        // Eczaneleri listele
+        function loadEczaneler() {
+            const eczaneler = getEczaneler();
+            const container = document.getElementById('eczaneListContainer');
+
+            if (eczaneler.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </svg>
+                        <p>Henüz eczane eklenmemiş</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = eczaneler.map(eczane => `
+                <div class="eczane-card">
+                    <div class="eczane-header">
+                        <div class="eczane-name">${eczane.name}</div>
+                        <div class="eczane-code">Kod: ${eczane.code}</div>
+                    </div>
+                    
+                    <div class="iframe-code" id="iframe-${eczane.id}">
+&lt;iframe src="${BASE_URL}/?code=${eczane.code}" width="100%" height="80" frameborder="0" style="border: none;"&gt;&lt;/iframe&gt;
+                    </div>
+
+                    <div class="eczane-actions">
+                        <button class="action-btn copy-btn" onclick="copyIframe(${eczane.id})">
+                            📋 Kodu Kopyala
+                        </button>
+                        <button class="action-btn edit-btn" onclick="editEczane(${eczane.id})">
+                            ✏️ Düzenle
+                        </button>
+                        <button class="action-btn delete-btn" onclick="deleteEczane(${eczane.id})">
+                            🗑️ Sil
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Iframe kodunu kopyala
+        function copyIframe(id) {
+            const iframeDiv = document.getElementById(`iframe-${id}`);
+            const text = iframeDiv.textContent.trim();
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showSuccess('Iframe kodu kopyalandı!');
+            }).catch(err => {
+                // Fallback method
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showSuccess('Iframe kodu kopyalandı!');
+            });
+        }
+
+        // Eczane düzenle
+        function editEczane(id) {
+            const eczaneler = getEczaneler();
+            const eczane = eczaneler.find(e => e.id === id);
+
+            if (!eczane) return;
+
+            const newName = prompt('Yeni eczane adı:', eczane.name);
+            if (!newName) return;
+
+            const newCode = prompt('Yeni eczane kodu:', eczane.code);
+            if (!newCode) return;
+
+            // Kod kontrolü (aynı kod başkasında varsa)
+            if (eczaneler.some(e => e.code === newCode && e.id !== id)) {
+                alert('Bu kod başka bir eczane tarafından kullanılıyor!');
+                return;
+            }
+
+            eczane.name = newName.trim();
+            eczane.code = newCode.trim();
+
+            saveEczaneler(eczaneler);
+            loadEczaneler();
+            showSuccess('Eczane güncellendi!');
+        }
+
+        // Eczane sil
+        function deleteEczane(id) {
+            if (!confirm('Bu eczaneyi silmek istediğinizden emin misiniz?')) {
+                return;
+            }
+
+            let eczaneler = getEczaneler();
+            eczaneler = eczaneler.filter(e => e.id !== id);
+            saveEczaneler(eczaneler);
+            loadEczaneler();
+            showSuccess('Eczane silindi!');
+        }
+
+        // Başarı mesajı göster
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
