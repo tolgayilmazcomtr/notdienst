@@ -96,6 +96,20 @@
                 opacity: 0.6;
             }
         }
+
+        /* Debug info - silebilirsiniz */
+        .debug {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-family: monospace;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
@@ -109,12 +123,25 @@
         </div>
     </div>
 
+    <!-- Debug bilgisi - istersen kaldır -->
+    <div class="debug" id="debugInfo" style="display: none;">
+        Code: <span id="currentCode">-</span><br>
+        Status: <span id="status">Loading...</span><br>
+        Last Update: <span id="lastUpdate">-</span>
+    </div>
+
     <script>
-        // AYARLAR - Buradan değiştirin
+        // URL'den code parametresini al
+        function getCodeFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('code') || '0950'; // Varsayılan: 0950
+        }
+
+        // Ayarları URL'ye göre oluştur
         const CONFIG = {
-            BEZIRK_CODE: '0950',
-            UPDATE_INTERVAL: 3600000, // 1 saat (milisaniye)
-            API_URL: '/api/apotheken' // Vercel API endpoint
+            BEZIRK_CODE: getCodeFromURL(),
+            UPDATE_INTERVAL: 3600000, // 1 saat
+            API_URL: '/api/apotheken'
         };
 
         async function fetchApotheken() {
@@ -122,12 +149,16 @@
                 const response = await fetch(`${CONFIG.API_URL}?code=${CONFIG.BEZIRK_CODE}`);
                 const data = await response.json();
                 
+                // Debug
+                updateDebug('success', data.count);
+                
                 if (data.success && data.apotheken) {
                     return data.apotheken;
                 }
                 return [];
             } catch (error) {
                 console.error('API Fehler:', error);
+                updateDebug('error', 0);
                 return [];
             }
         }
@@ -138,7 +169,7 @@
             if (!apotheken || apotheken.length === 0) {
                 tickerContent.innerHTML = `
                     <span class="pulse"></span>
-                    NOTDIENST-APOTHEKEN
+                    NOTDIENST-APOTHEKEN (Code: ${CONFIG.BEZIRK_CODE})
                     <span class="pulse"></span>
                     ❌ Keine Informationen verfügbar
                 `;
@@ -156,13 +187,22 @@
                 ${apothekenText}  ★★★  ${apothekenText}
             `;
             
-            console.log(`✅ ${apotheken.length} Apotheken geladen`);
+            console.log(`✅ ${apotheken.length} Apotheken geladen für Code: ${CONFIG.BEZIRK_CODE}`);
+        }
+
+        function updateDebug(status, count) {
+            document.getElementById('currentCode').textContent = CONFIG.BEZIRK_CODE;
+            document.getElementById('status').textContent = status;
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('de-DE');
         }
 
         async function init() {
             console.log('🏥 Notdienst-Apotheken System gestartet');
-            console.log(`📍 Bezirk: ${CONFIG.BEZIRK_CODE}`);
+            console.log(`📍 Bezirk Code: ${CONFIG.BEZIRK_CODE}`);
             console.log(`🔄 Update-Intervall: ${CONFIG.UPDATE_INTERVAL/1000/60} Minuten`);
+            
+            // Debug panel göster (development için - production'da kaldırın)
+            // document.getElementById('debugInfo').style.display = 'block';
             
             // İlk yükleme
             const apotheken = await fetchApotheken();
@@ -177,26 +217,11 @@
         }
 
         window.addEventListener('DOMContentLoaded', init);
+
+        // URL değişirse sayfayı yenile (isteğe bağlı)
+        window.addEventListener('popstate', () => {
+            location.reload();
+        });
     </script>
 </body>
-</html>'''
-
-# ============================================
-# DOSYA 3: vercel.json
-# ============================================
-
-VERCEL_CONFIG = '''{
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/apotheken.py",
-      "use": "@vercel/python"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
-    }
-  ]
-}
+</html>
