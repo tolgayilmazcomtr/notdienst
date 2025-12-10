@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notdienst-Apotheken - Live</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: transparent;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .ticker-container {
+            width: 100%;
+            background: linear-gradient(135deg, #c81e1e 0%, #8b0000 100%);
+            padding: 18px 0;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+            border-top: 3px solid #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ticker-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent,
+                #ffffff,
+                rgba(255, 255, 255, 0.8),
+                #ffffff,
+                transparent
+            );
+            animation: shine 3s linear infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .ticker-wrapper {
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .ticker-content {
+            display: inline-block;
+            white-space: nowrap;
+            padding-left: 100%;
+            animation: scroll-left 70s linear infinite;
+            font-size: 28px;
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8),
+                         0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        
+        @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        
+        .ticker-content:hover {
+            animation-play-state: paused;
+        }
+        
+        .pulse {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #ffffff;
+            border-radius: 50%;
+            margin: 0 8px;
+            animation: pulse 1.5s ease-in-out infinite;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.3);
+                opacity: 0.6;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ticker-container">
+        <div class="ticker-wrapper">
+            <div class="ticker-content" id="tickerContent">
+                <span class="pulse"></span>
+                NOTDIENST-APOTHEKEN - Wird geladen...
+                <span class="pulse"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // AYARLAR - Buradan değiştirin
+        const CONFIG = {
+            BEZIRK_CODE: '0950',
+            UPDATE_INTERVAL: 3600000, // 1 saat (milisaniye)
+            API_URL: '/api/apotheken' // Vercel API endpoint
+        };
+
+        async function fetchApotheken() {
+            try {
+                const response = await fetch(`${CONFIG.API_URL}?code=${CONFIG.BEZIRK_CODE}`);
+                const data = await response.json();
+                
+                if (data.success && data.apotheken) {
+                    return data.apotheken;
+                }
+                return [];
+            } catch (error) {
+                console.error('API Fehler:', error);
+                return [];
+            }
+        }
+
+        function updateTicker(apotheken) {
+            const tickerContent = document.getElementById('tickerContent');
+            
+            if (!apotheken || apotheken.length === 0) {
+                tickerContent.innerHTML = `
+                    <span class="pulse"></span>
+                    NOTDIENST-APOTHEKEN
+                    <span class="pulse"></span>
+                    ❌ Keine Informationen verfügbar
+                `;
+                return;
+            }
+            
+            const apothekenText = apotheken
+                .map(a => `🏥 ${a.name} • 📍 ${a.address} • ${a.phone}`)
+                .join('  ★★★  ');
+            
+            tickerContent.innerHTML = `
+                <span class="pulse"></span>
+                NOTDIENST-APOTHEKEN
+                <span class="pulse"></span>
+                ${apothekenText}  ★★★  ${apothekenText}
+            `;
+            
+            console.log(`✅ ${apotheken.length} Apotheken geladen`);
+        }
+
+        async function init() {
+            console.log('🏥 Notdienst-Apotheken System gestartet');
+            console.log(`📍 Bezirk: ${CONFIG.BEZIRK_CODE}`);
+            console.log(`🔄 Update-Intervall: ${CONFIG.UPDATE_INTERVAL/1000/60} Minuten`);
+            
+            // İlk yükleme
+            const apotheken = await fetchApotheken();
+            updateTicker(apotheken);
+            
+            // Periyodik güncelleme
+            setInterval(async () => {
+                console.log('🔄 Apotheken werden aktualisiert...');
+                const updatedApotheken = await fetchApotheken();
+                updateTicker(updatedApotheken);
+            }, CONFIG.UPDATE_INTERVAL);
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>'''
+
+# ============================================
+# DOSYA 3: vercel.json
+# ============================================
+
+VERCEL_CONFIG = '''{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/apotheken.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    }
+  ]
+}
